@@ -23,10 +23,18 @@ def truncate_log(log: str, max_lines: int = 15):
 
 def parse_llm_json(raw_text: str):
     try:
-        # Non-greedy search to prevent swallowing multiple blocks
-        match = re.search(r'\{[\s\S]*?\}', raw_text)
-        json_str = match.group(0) if match else raw_text
-        return json.loads(json_str, strict=False)
+        # Find the first opening brace and the last closing brace
+        start_idx = raw_text.find('{')
+        end_idx = raw_text.rfind('}')
+        
+        # If both exist and are in the correct order, slice out the pure JSON
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            json_str = raw_text[start_idx:end_idx+1]
+            return json.loads(json_str, strict=False)
+        
+        # Fallback if no brackets are found
+        return json.loads(raw_text, strict=False)
+        
     except json.JSONDecodeError as e:
         print(f"   ⚠️ JSON Parse Error: {e}")
         return {}
@@ -232,7 +240,8 @@ def save_to_workspace(design_name: str, design: dict):
 
 def verify_with_verilator(v_file: str):
     print("   🛠️ Stage 1: Running Verilator structural check...")
-    cmd = ["verilator", "--lint-only", "-Wall", "-Wno-DECLFILENAME", "-Wno-fatal", v_file]
+    # NEW: Removed -Wno-fatal and added -Werror-WIDTH to instantly catch truncation
+    cmd = ["verilator", "--lint-only", "-Wall", "-Wno-DECLFILENAME", "-Werror-WIDTH", v_file]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
         if result.returncode == 0:
@@ -305,7 +314,7 @@ def autonomous_build_loop(base_prompt: str, design_name: str, provider: str, max
     for attempt in range(max_retries):
         print(f"\n🔄 Attempt {attempt + 1}/{max_retries}...")
         
-       if architecture_flawed:
+        if architecture_flawed:
             architecture = generate_architecture(clarified_spec, provider, error_log)
             if not architecture or "module_class" not in architecture:
                 print("   ⚠️ Architect returned invalid blueprint. Forcing redesign.")
