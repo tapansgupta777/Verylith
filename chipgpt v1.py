@@ -46,8 +46,7 @@ def run_llm(prompt: str, system_prompt: str, provider: str, max_api_retries=3):
             if provider == "openai":
                 client = OpenAI()
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    temperature=0.1,
+                    model="gpt-5-mini",
                     messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}],
                     response_format={"type": "json_object"}
                 )
@@ -144,7 +143,7 @@ def generate_architecture(spec: dict, provider: str, previous_error: str = None)
     """
     return run_llm(json.dumps(spec), system_prompt, provider)
 
-def generate_hardware(prompt: str, provider: str, design_name: str, architecture: dict, previous_ports: str = None):
+def generate_hardware(prompt: str, provider: str, design_name: str, architecture: dict, previous_ports: str = None, previous_error: str = None):
     """AGENT 2: The Generator. Adapts to FSM or Datapath with strict latch prevention and reasoning."""
     print(f"   🛠️ Routing to GENERATOR AGENT ({provider.upper()}) to write RTL...")
     
@@ -152,16 +151,25 @@ def generate_hardware(prompt: str, provider: str, design_name: str, architecture
     if previous_ports:
         port_rule = f"2. STRICT INTERFACE CRITICAL: You MUST reuse this exact previous interface: {previous_ports}"
 
+    error_context = f"\n=== CRITICAL FEEDBACK FROM PREVIOUS FAILURE ===\n{previous_error}\nDO NOT REPEAT THIS MISTAKE.\n===============================================\n" if previous_error else ""
+
     system_prompt = f"""
     You are an elite RTL design engineer. Your goal is to write perfectly synthesizable Verilog-2001.
-
+    {error_context}
     Implement exactly this architecture designed by the Senior Architect:
     {json.dumps(architecture, indent=2)}
 
     CRITICAL SILICON RULES:
     1. TOP MODULE NAME: The main module MUST be named exactly: `{design_name}`.
     {port_rule}
-    3. NO SystemVerilog: `logic`, `always_comb`, etc. are forbidden.
+    3. STRICT VERILOG-2001 ONLY: You are targeting a strict compiler. The following are STRICTLY FORBIDDEN:
+       - `logic` (use `reg` or `wire`)
+       - `always_ff` / `always_comb` (use `always @(posedge clk)` / `always @(*)`)
+       - `$urandom` / `$urandom_range` (use `$random`)
+       - `int` (use `integer`)
+       - NEVER declare variables inside procedural blocks (like inside an `initial`, `always`, or `for` loop). 
+         [BAD]: initial begin reg temp; temp = 1; end
+         [GOOD]: reg temp; initial begin temp = 1; end
     4. CONCURRENCY: Sequential logic MUST use non-blocking (`<=`) in an `always @(posedge clk...)` block. Combinational logic MUST use blocking (`=`) in a separate `always @(*)` block. No exceptions.
     5. ARCHITECTURE COMPLIANCE: 
        - If `module_class` is "FSM", implement a deterministic state machine using `case(state)`.
@@ -169,7 +177,9 @@ def generate_hardware(prompt: str, provider: str, design_name: str, architecture
     6. NO LATCHES: Every combinational `always @(*)` block MUST assign default values to all its driven signals at the very top.
     7. RESETS: All sequential registers MUST be explicitly initialized in the reset condition.
     8. TESTBENCH: TB must begin with `` `timescale 1ns/1ps `` and include: `initial begin $dumpfile("{design_name}.vcd"); $dumpvars(0, {design_name}_tb); end`. Run randomized checks and print "ERROR" on mismatch.
-
+    9. SILENT TRUNCATION PREVENTION: Calculate register widths mathematically. To store a maximum value of N (like a depth or counter), the register MUST be at least ceil(log2(N+1)) bits wide. Never compare a register to a value larger than its maximum representable unsigned number.
+    10. INVARIANT ASSERTIONS: To prevent spec drift, the testbench MUST include runtime assertions using standard Verilog. Check for impossible conditions (e.g., `if (wr_en && full) $display("ERROR: Write when full!");`).
+    
     Return pure JSON:
     {{
      "structural_reasoning": "Plan your state register widths, datapath widths, reset behavior, and concurrency isolation here BEFORE writing code...",
@@ -324,7 +334,8 @@ def autonomous_build_loop(base_prompt: str, design_name: str, provider: str, max
         else:
             print("   📐 Architect Agent: Reusing stable architectural blueprint.")
         
-        design = generate_hardware(base_prompt, provider, design_name, architecture, locked_ports)
+        # WE ARE FINALLY PASSING THE ERROR LOG TO THE GENERATOR!
+        design = generate_hardware(base_prompt, provider, design_name, architecture, locked_ports, error_log)
         v_code = design.get("verilog_code") or ""
         
         if not locked_ports and architecture.get("port_interface"):
@@ -351,7 +362,7 @@ def autonomous_build_loop(base_prompt: str, design_name: str, provider: str, max
                 critic_review = run_critic_agent(design, architecture, base_prompt, provider, error_log)
                 if not critic_review.get("pass", False):
                     print("   🛑 Critic Agent Rejected the Code! (Logical Flaw Found)")
-                    error_log = f"Senior engineer review detected the following flaw:\n{critic_review.get('feedback')}\n\nFix the RTL while preserving the interface."
+                    error_log = f"Senior engineer review detected the following flaw:\n{critic_review.get('feedback')}\n\nFix the RTL to match the spec. Do NOT weaken or delete tests from the testbench to force a pass."
                     architecture_flawed = critic_review.get("architecture_flawed", False)
                 else:
                     print("   ✅ Critic Agent Approved the Logic.")
