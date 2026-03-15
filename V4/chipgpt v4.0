@@ -12,14 +12,6 @@ from collections import OrderedDict
 from openai import OpenAI
 from groq import Groq
 
-# External skeleton library — versioned, testable independently
-from skeletons import (
-    detect_design_type,
-    get_skeleton,
-    check_skeleton_invariants,
-    SKELETON_LIBRARY,
-)
-
 # ==============================================================================
 # MODEL TIER CONFIGURATION
 # ==============================================================================
@@ -29,7 +21,7 @@ STRONG_MODEL = "gpt-5-mini"
 REASONING_MODELS = {
     "o1", "o1-mini", "o1-preview",
     "o3", "o3-mini",
-    "gpt-5-mini", "gpt-5",
+    "gpt-5-mini",
 }
 
 def _is_reasoning_model(model_name: str) -> bool:
@@ -127,9 +119,6 @@ def classify_failure(log: str) -> str:
     if "width" in l or "size" in l:
         return "WIDTH_MISMATCH"
     # X/Z propagation: match standalone x/z values, not hex prefixes like 0x01
-    # "got z" specifically means an undriven wire — classify separately
-    if re.search(r'\bgot\s+z\b|\bvalue\s*=\s*z\b', l):
-        return "UNDRIVEN_OUTPUT"
     if re.search(r"(?<![0-9a-fA-F'hH])x(?![0-9a-fA-F])|(?<![0-9a-fA-F'hH])z(?![0-9a-fA-F])", l) or re.search(r'\bxx+\b', l):
         return "X_PROPAGATION_BUG"
     if "stuck" in l or "never changes" in l:
@@ -316,34 +305,6 @@ def clean_code_string(raw_code: str) -> str:
                   f"{triple_tick}v", triple_tick):
         clean = clean.replace(fence, "")
     return clean.strip()
-
-
-def _check_blocking_mix(v_code: str) -> str:
-    """Static pre-flight check for BLKANDNBLK (mixed blocking/non-blocking on same var).
-    Returns the offending variable name if found, empty string if clean.
-    Only checks inside always @(posedge...) blocks — blocking is legal in always @(*).
-    """
-    # Extract sequential always blocks only
-    seq_blocks = re.findall(
-        r'always\s*@\s*\(\s*posedge.*?(?=always\s*@|\Z)',
-        v_code, re.DOTALL | re.IGNORECASE
-    )
-    for block in seq_blocks:
-        nonblock_vars = set(
-            m.group(1).strip().split('[')[0].strip()   # strip bit-select
-            for m in re.finditer(r'(\w[\w\[\]:]*)\s*<=', block)
-            if m.group(1).strip() not in ('', 'begin', 'end')
-        )
-        block_vars = set(
-            m.group(1).strip().split('[')[0].strip()
-            for m in re.finditer(r'(?<!<)(?<!=)\b(\w+)\s*=[^=<>!]', block)
-            if m.group(1).strip() not in ('', 'begin', 'end', 'if', 'else',
-                                           'case', 'default', 'integer', 'reg')
-        )
-        conflict = nonblock_vars & block_vars
-        if conflict:
-            return next(iter(conflict))
-    return ""
 
 # ==============================================================================
 # CORE LLM ROUTER
@@ -618,6 +579,177 @@ Return pure JSON: {"status": "...", "fixed_code": "..."}
     return run_llm(v_code, system_prompt, provider,
                    cand_idx=0, force_fast_model=True, silent=True)
 
+# ==============================================================================
+# RTL SKELETON LIBRARY
+# These are verified-correct structural skeletons for common design types.
+# They are NOT used as format()-string templates (Verilog braces would conflict).
+# Instead they are injected into the RTL generator prompt as a "starting skeleton"
+# that the LLM must preserve structurally and only fill with the correct parameters.
+# ==============================================================================
+
+# Keys must match detect_design_type() return values
+RTL_SKELETONS = {
+    "counter": """\
+// SKELETON — preserve structure, fill WIDTH and signal names from spec
+module <name> #(parameter WIDTH = 8) (
+    input clk, input rst_n,
+    input enable,
+    output reg [WIDTH-1:0] count
+);
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) count <= 0;
+    else if (enable) count <= count + 1;
+end
+endmodule""",
+
+    "shift_register": """\
+// SKELETON — preserve structure, fill WIDTH and direction from spec
+module <name> #(parameter WIDTH = 8) (
+    input clk, input rst_n,
+    input shift_en, input serial_in,
+    output reg [WIDTH-1:0] parallel_out
+);
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) parallel_out <= 0;
+    else if (shift_en) parallel_out <= {parallel_out[WIDTH-2:0], serial_in}; // LEFT shift, LSB-in
+end
+endmodule""",
+
+    "skid_buffer": """\
+// SKELETON — canonical skid buffer: output register + one skid slot
+// Key invariant: s_ready = !buf_valid || m_ready
+// Source can always push UNLESS skid is occupied AND downstream isn't draining
+module <n> #(parameter WIDTH = 8) (
+    input                  clk,
+    input                  rst_n,
+    input                  s_valid,
+    input      [WIDTH-1:0] s_data,
+    output                 s_ready,
+    output reg             m_valid,
+    output reg [WIDTH-1:0] m_data,
+    input                  m_ready
+);
+    reg             buf_valid;
+    reg [WIDTH-1:0] buf_data;
+
+    // s_ready: source can push when skid is empty, OR master is draining this cycle
+    assign s_ready = !buf_valid || m_ready;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            buf_valid <= 1'b0;
+            m_valid   <= 1'b0;
+            m_data    <= {WIDTH{1'b0}};
+            buf_data  <= {WIDTH{1'b0}};
+        end else begin
+            // DRAIN path: master consumed output, or output is empty
+            // Refill from skid slot first; if skid empty, take directly from source
+            if (m_ready || !m_valid) begin
+                if (buf_valid) begin
+                    m_valid   <= 1'b1;
+                    m_data    <= buf_data;
+                    buf_valid <= 1'b0;
+                end else if (s_valid) begin
+                    m_valid   <= 1'b1;
+                    m_data    <= s_data;
+                end else begin
+                    m_valid   <= 1'b0;
+                end
+            end
+            // PUSH path: source is pushing AND output register is busy (not draining)
+            // s_ready guarantees buf_valid is 0 in this case
+            if (s_valid && s_ready && !(m_ready || !m_valid)) begin
+                buf_valid <= 1'b1;
+                buf_data  <= s_data;
+            end
+        end
+    end
+endmodule""",
+
+    "fsm": """\
+// SKELETON — two-always FSM, fill states and transitions from spec
+// State register
+reg [1:0] state, next_state;
+// State encoding: define states as localparams
+// Combinational next-state logic
+always @(*) begin
+    next_state = state;
+    case (state)
+        // FILL: add state transitions here
+    endcase
+end
+// Sequential state register with async reset
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) state <= 0;
+    else state <= next_state;
+end""",
+}
+
+
+def detect_design_type(spec: dict, prompt: str) -> str:
+    """Classify the design type from spec fields and prompt text.
+    Uses spec first (more reliable) then falls back to prompt keywords.
+    Returns a key into RTL_SKELETONS, or 'generic' if no match.
+    """
+    # Use the formalized_request from clarifier spec if available
+    text = (
+        spec.get("formalized_request", "") + " " + prompt
+    ).lower()
+
+    # Order matters — more specific patterns first
+    if any(kw in text for kw in ("skid buffer", "skid_buffer", "ready/valid pipeline",
+                                  "pipeline register", "ready valid pipeline")):
+        return "skid_buffer"
+    if any(kw in text for kw in ("shift register", "sipo", "piso", "siso", "serial-in",
+                                  "serial in parallel", "shift reg")):
+        return "shift_register"
+    if any(kw in text for kw in ("up/down counter", "up down counter", "bidirectional counter",
+                                  "loadable counter", "saturating counter")):
+        return "counter"
+    if "counter" in text and "fifo" not in text:
+        return "counter"
+    if any(kw in text for kw in ("state machine", "fsm", "sequence detector",
+                                  "protocol controller")):
+        return "fsm"
+    return "generic"
+
+
+def get_rtl_skeleton(design_type: str, design_name: str) -> str:
+    """Return the skeleton for a design type with the module name substituted."""
+    skeleton = RTL_SKELETONS.get(design_type, "")
+    if not skeleton:
+        return ""
+    return skeleton.replace("<name>", design_name)
+
+
+def has_ready_valid_ports(port_interface: list) -> bool:
+    """Check if the port interface includes ready/valid handshake signals."""
+    if not port_interface:
+        return False
+    names = {p.get("name", "").lower() for p in port_interface}
+    return bool(names & {"s_valid", "m_valid", "s_ready", "m_ready", "valid", "ready"})
+
+
+def build_protocol_assertions(port_interface: list, design_name: str) -> str:
+    """Generate Verilog-2001 compatible protocol assertions for ready/valid interfaces.
+    Uses manual history registers instead of $past() which requires SystemVerilog.
+    Only called when has_ready_valid_ports() is True.
+    """
+    return f"""\
+// Protocol assertions (Verilog-2001, no $past needed)
+// Checks: once m_valid asserts, m_data must not change until m_ready accepts
+reg [7:0] _prev_m_data;
+reg       _prev_m_valid;
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin _prev_m_data <= 0; _prev_m_valid <= 0; end
+    else begin
+        if (_prev_m_valid && !m_ready && m_valid)
+            if (m_data !== _prev_m_data)
+                $display("ASSERTION FAILED: m_data changed while m_valid=1 and m_ready=0 (data stability violation)");
+        _prev_m_data  <= m_data;
+        _prev_m_valid <= m_valid;
+    end
+end"""
 
 
 # ==============================================================================
@@ -687,10 +819,6 @@ TARGETED FIX RULES based on failure type:
                            driven as: assign s_ready = !buffer_valid || m_ready;
                            (NOT assign s_ready = m_ready — that omits the buffered case)
                            Only apply this rule if those signal names are present.
-- UNDRIVEN_OUTPUT        → an output port reads as 'z' (high-impedance) meaning it has
-                           no driver. Fix: declare it as 'output reg' and add an explicit
-                           assignment in the reset block and in the sequential logic.
-                           Example: 'output reg m_valid' with 'm_valid <= 1\'b0' in reset.
 - X_PROPAGATION_BUG      → explicitly initialize the signal in the reset block
 - COMBINATIONAL_LOOP     → break the cyclic combinational dependency
 - TB_TIMEOUT             → check for combinational loops or missing $finish paths
@@ -706,38 +834,28 @@ PREVIOUS BEST VERILOG (mutate this, do not rewrite from scratch):
             "Fix only the line causing this error. Do not restructure the module."
         )
 
-    # Skeleton injection from external library (skeletons.py)
+    # Skeleton injection: for known design types, provide a verified-correct
+    # structural starting point. The LLM fills in parameters and signal names
+    # rather than inventing the architecture from scratch.
     design_type = detect_design_type(clarified_spec or {}, prompt)
-    # Infer width from architecture if available
-    width = 8
-    for reg in architecture.get("registers", []):
-        if reg.get("width"):
-            try:
-                width = int(reg["width"])
-                break
-            except (ValueError, TypeError):
-                pass
-
-    skeleton = get_skeleton(design_type, design_name, width)
+    skeleton    = get_rtl_skeleton(design_type, design_name)
     skeleton_section = ""
     if skeleton and not is_mutation:
         skeleton_section = f"""
 STRUCTURAL SKELETON — you MUST use this as your starting point.
-This skeleton encodes invariants that are FROZEN and must not be changed:
-the sensitivity list, reset structure, non-blocking discipline, and (for
-skid buffers) the s_ready equation and drain/push priority.
-Only adapt signal widths, port names, and behavioral branches to match the spec.
-DO NOT remove reset initializations. DO NOT introduce blocking (=) assignments
-inside always @(posedge clk) blocks.
+Preserve the module structure, port order, always block sensitivity lists,
+and handshake logic exactly. Only adapt signal widths and names to match
+the spec and port_interface above. Do NOT restructure or simplify.
 
 {skeleton}
 
 """
     elif skeleton and is_mutation:
+        # On mutations, remind about correct structure without full skeleton
         skeleton_section = f"""
-REFERENCE SKELETON for {design_type} — compare your mutation against this.
-Ensure the frozen structural patterns are preserved:
+REFERENCE SKELETON for {design_type} (correct structural pattern):
 {skeleton}
+Compare your mutation against this reference to ensure the core structure is preserved.
 
 """
     alg_sections = []
@@ -822,18 +940,14 @@ SILICON RULES — all mandatory:
 1. Top module named exactly: `{design_name}`
 {port_rule}
 3. Verilog-2001 only. No SystemVerilog. No initial blocks in synthesizable modules.
-4. Sequential always @(posedge clk): non-blocking (<=) ONLY.
-   Combinational always @(*): blocking (=) ONLY.
-   NEVER mix blocking (=) and non-blocking (<=) on the same variable anywhere.
-   This causes BLKANDNBLK errors that cannot be synthesized.
+4. Sequential always @(posedge clk): non-blocking (<=) only.
+   Combinational always @(*): blocking (=) only.
 5. No latches: assign defaults to all signals at top of every always @(*) block.
 6. Parameters: module {design_name} #(parameter WIDTH=8) (input clk, ...);
 7. No expression part-selects: use intermediate wire instead of (a-b)[3:0].
 8. ASYNC RESET: active-low means reset when signal is LOW.
    Sensitivity: always @(posedge clk or negedge rst_n)
    Check:       if (!rst_n) begin ... end else begin ... end
-   EVERY output reg and internal reg MUST be initialized in the reset block.
-   Uninitialized regs produce 'z' (high-impedance) in simulation — a fatal error.
 9. SINGLE DRIVER: Every reg driven by exactly ONE always block.
 10. COMBINATIONAL FLAGS: If the spec says a flag "goes high WHEN condition",
     implement as: assign flag = (condition); — wire, not reg.
@@ -911,16 +1025,10 @@ PORT INTERFACE (instantiate the DUT using exactly these signals):
 {port_str}
 
 TESTBENCH RULES — all mandatory:
-1. First line of the file MUST be: `timescale 1ns/1ps
-   (backtick, no space, exactly as shown — this prevents line-1 syntax errors)
+1. `timescale 1ns/1ps
 2. Verilog-2001 only. No SystemVerilog anywhere.
 3. Declare ALL variables at top of module, never inside begin/end blocks.
-4. DUT INSTANTIATION — CRITICAL:
-   You MUST instantiate the DUT module with its EXACT name: `{design_name}`
-   CORRECT:   {design_name} dut ( .clk(clk), .rst_n(rst_n), ... );
-   WRONG:     dut dut ( ... );          // 'dut' is NOT a module name
-   WRONG:     my_module dut ( ... );    // use the exact name: {design_name}
-   Connect ports by NAME using .portname(signal) — never by position.
+4. Drive DUT inputs through declared reg variables only.
 5. Clock: always #5 clk = ~clk; with initial clk = 0;
    Period = 10ns. negedge at t=5,15,25,... posedge at t=10,20,30,...
 
@@ -1124,11 +1232,6 @@ def autonomous_build_loop(
         print("   ❌ Clarifier returned empty spec.")
         return False
 
-    # Compute once — used for skeleton injection and invariant checking
-    design_type = detect_design_type(clarified_spec, base_prompt)
-    if design_type != "generic":
-        print(f"   🧩 Design type detected: {design_type} (skeleton available)")
-
     arch_hashes          = set()
     code_hashes          = set()
     locked_ports         = None
@@ -1173,7 +1276,6 @@ def autonomous_build_loop(
             best_v_code           = None
             best_tb_code          = None
             locked_ports          = None
-            code_hashes           = set()   # fresh arch → fresh candidate space
             fail_history_str = "\n".join(
                 f"- Arch {h[:6]}: " + ", ".join(reasons)
                 for h, reasons in arch_failures.items()
@@ -1261,19 +1363,6 @@ def autonomous_build_loop(
                         print("   ⚠️  Duplicate candidate — discarded.")
                         continue
                     code_hashes.add(h)
-
-                    # Static BLKANDNBLK check: reject before Verilator wastes a call
-                    blk_err = _check_blocking_mix(v_code)
-                    if blk_err:
-                        print(f"   ⚠️  BLKANDNBLK detected ({blk_err}) — candidate discarded.")
-                        continue
-
-                    # Skeleton invariant check: reject if frozen structural lines were removed
-                    if design_type != "generic":
-                        inv_ok, violations = check_skeleton_invariants(v_code, design_type)
-                        if not inv_ok:
-                            print(f"   ⚠️  Skeleton invariant violated ({violations[0][:60]}) — discarding.")
-                            continue
 
                     has_memory_blocks = bool(architecture.get("memory_blocks"))
                     if (architecture.get("module_class") == "DATAPATH"
