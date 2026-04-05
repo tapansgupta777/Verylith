@@ -1,4 +1,4 @@
-# ChipGPT — Autonomous RTL Generator
+# Verylith — Autonomous GDS/OAS Generator
 
 > **Goal:** Natural language prompt → verified synthesizable Verilog RTL → *(future)* GDS/OAS layout
 
