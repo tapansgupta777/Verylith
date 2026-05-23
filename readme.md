@@ -1,4 +1,4 @@
-# Verylith — Autonomous GDS/OAS Generator
+# ChipGPT — Autonomous RTL Generator
 
 > **Goal:** Natural language prompt → verified synthesizable Verilog RTL → *(future)* GDS/OAS layout
 
@@ -234,5 +234,3 @@ python3 chipgpt.py "<natural language hardware description>" \
 **Companion file:** `skeletons.py` — must be in same directory
 
 ---
-
-*Last updated: Session covering AXI4-Stream UART bridge failures and width normalization. Core pipeline stable for single-module DATAPATH and simple FSM designs. Bridge/adapter designs remain the active challenge.*
