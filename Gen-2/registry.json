@@ -1,0 +1,542 @@
+{
+  "history": [
+    {
+      "candidate_id": 6,
+      "design_type": "axi_stream_uart_tx",
+      "module": "uart_tx_axi",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/uart_tx_axi/candidate_6/src/uart_tx_axi.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/uart_tx_axi/candidate_6/src/uart_tx_axi.v",
+      "src_sha256": "b78b2f451994e399811b6372a03a415b498dc63ed5aceb2fbaf66c7edd206508",
+      "status": "VERIFIED",
+      "tb": "workspace/uart_tx_axi/candidate_6/tb/uart_tx_axi_tb.v",
+      "yosys_summary": "Cells: 38, DFFs: 10"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "rv32i_regfile",
+      "module": "rv32i_regfile",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_regfile/candidate_1/src/rv32i_regfile.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_regfile/candidate_1/src/rv32i_regfile.v",
+      "src_sha256": "e8478de5d2cbaff7a048190cfb0fe817fece7aee472b6fcae9ac2f35b98b36fa",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_regfile/candidate_1/tb/rv32i_regfile_tb.v",
+      "yosys_summary": "Cells: 194, DFFs: 42"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_alu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_alu/candidate_1/src/rv32i_alu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_alu/candidate_1/src/rv32i_alu.v",
+      "src_sha256": "9892b5888bddd6d10d911e5570a2678f7ea5ce799b4b2085e8167abc24747d55",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_alu/candidate_1/tb/rv32i_alu_tb.v",
+      "yosys_summary": "Cells: 33, DFF cells: 0"
+    },
+    {
+      "candidate_id": 2,
+      "design_type": "rv32i_decoder",
+      "module": "rv32i_decoder",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_decoder/candidate_2/src/rv32i_decoder.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_decoder/candidate_2/src/rv32i_decoder.v",
+      "src_sha256": "9ed46f7831a37ba22443ccf597347f55203b766123c0f0f35dcd0b6da3da6d1e",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_decoder/candidate_2/tb/rv32i_decoder_tb.v",
+      "yosys_summary": "Cells: 18, DFF cells: 0"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "counter",
+      "module": "rv32i_pc",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_pc/candidate_1/src/rv32i_pc.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_pc/candidate_1/src/rv32i_pc.v",
+      "src_sha256": "70deeda07824c1443f2c5214f07b4ed718bf1805354933615ec217dea33de22c",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_pc/candidate_1/tb/rv32i_pc_tb.v",
+      "yosys_summary": "Cells: 4, DFF cells: 1"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_bcu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_bcu/candidate_1/src/rv32i_bcu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_bcu/candidate_1/src/rv32i_bcu.v",
+      "src_sha256": "4f10eafe35ac7fefbb5721539e9c9f376e37e59d9626c2f0db3ddf9ccb73db4d",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_bcu/candidate_1/tb/rv32i_bcu_tb.v",
+      "yosys_summary": "Cells: 18, DFF cells: 0"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_lsu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_lsu/candidate_1/src/rv32i_lsu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_lsu/candidate_1/src/rv32i_lsu.v",
+      "src_sha256": "58048fb99e63fcbb53f85ab05c48a63e870faa8d2c3911dcb3711ce70cba51d8",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_lsu/candidate_1/tb/rv32i_lsu_tb.v",
+      "yosys_summary": "Cells: 29, DFF cells: 0"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "sram_byte_en",
+      "module": "data_memory",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "replaced_src": null,
+      "src": "workspace/data_memory/candidate_1/src/data_memory.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/data_memory/candidate_1/src/data_memory.v",
+      "src_sha256": "f286ac8bbfc479a28499d46e4d8689043b1a68f226f26f84ade52de39d72bd2e",
+      "status": "VERIFIED",
+      "tb": "workspace/data_memory/candidate_1/tb/data_memory_tb.v",
+      "yosys_summary": "Cells: 54, DFF cells: 13, Notes: memory cells: 1"
+    },
+    {
+      "candidate_id": 2,
+      "design_type": "hierarchical_top",
+      "module": "rv32i_core",
+      "prompt_sha256": "bc6294f7bab1d2b7e5126ad2b36b1d357834f601ab0fdc26329bda18b930bc60",
+      "registered_at": "2026-05-17T18:19:49+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_core/candidate_2/src/rv32i_core.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/rv32i_core/candidate_2/src/rv32i_core.v",
+      "src_sha256": "36314a756cbfb65557a70a8549e5510b3542a841810e59bddc92b8c80ed6d831",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_core/candidate_2/tb/rv32i_core_tb.v",
+      "yosys_summary": "Cells: 325, DFF cells: 32, Notes: memory array mapped to registers, Linked verified deps: rv32i_alu, rv32i_bcu, rv32i_decoder, rv32i_lsu, rv32i_pc, rv32i_regfile"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "hierarchical_top",
+      "module": "rv32i_soc",
+      "prompt_sha256": "e120e9efbbf153f08c4bb63ccf7685dc488b229038ffd1a93c24236d9565e6b6",
+      "registered_at": "2026-05-22T02:45:55+00:00",
+      "replaced_src": null,
+      "src": "workspace/rv32i_soc/candidate_1/src/rv32i_soc.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/rv32i_soc/candidate_1/src/rv32i_soc.v",
+      "src_sha256": "08a927b884fc29374c35344b4ffc045673bc1913491af9a69861e0ba1974369c",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_soc/candidate_1/tb/rv32i_soc_tb.v",
+      "yosys_summary": "Cells: 434, DFF cells: 58, Notes: memory array mapped to registers; memory cells: 3; linked memory deps, Linked verified deps: data_memory, rv32i_alu, rv32i_bcu, rv32i_decoder, rv32i_lsu, rv32i_pc, rv32i_regfile, rv32i_core"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "async_fifo",
+      "module": "async_fifo_test",
+      "prompt_sha256": "7b83eb919a4c106bbe5ca928fa6c443aff6893dd619284bb189b9bcae8028da7",
+      "registered_at": "2026-05-22T17:42:28+00:00",
+      "replaced_src": null,
+      "src": "workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_sha256": "5e6d6ccba7efa558870b80ea092ccc63a2bd9ae584fede372d1ba5e051a9f254",
+      "status": "VERIFIED",
+      "tb": "workspace/async_fifo_test/candidate_1/tb/async_fifo_test_tb.v",
+      "yosys_summary": "Cells: 32, DFF cells: 12, Notes: memory cells: 1"
+    },
+    {
+      "candidate_id": 4,
+      "design_type": "generic",
+      "module": "clock_divider",
+      "prompt_sha256": "78565b58b7c5c34365162dca76ddd9b34dc12ece07748a321de72ad19900adee",
+      "registered_at": "2026-05-26T04:50:42+00:00",
+      "replaced_src": null,
+      "src": "workspace/clock_divider/candidate_4/src/clock_divider.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/clock_divider/candidate_4/src/clock_divider.v",
+      "src_sha256": "1894a346e74939329f3e352ef45f199c20a7a7828bb7a6990c89efcac58a2676",
+      "status": "VERIFIED",
+      "tb": "workspace/clock_divider/candidate_4/tb/clock_divider_tb.v",
+      "yosys_summary": "Cells: 8, DFF cells: 2"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "async_fifo",
+      "module": "async_fifo_test",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-26T07:41:25+00:00",
+      "replaced_src": "workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src": "workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_sha256": "1fc1e1bf28a50fea33bd3a83f80ab465e5fc9217973a563f209ba1a19eb47012",
+      "status": "VERIFIED",
+      "tb": "workspace/async_fifo_test/candidate_1/tb/async_fifo_test_tb.v",
+      "yosys_summary": null
+    },
+    {
+      "candidate_id": 18,
+      "design_type": "sar_adc_controller",
+      "module": "sar_adc_12b",
+      "prompt_sha256": "7bbc0a27210aba025955024c23eb0cad85ad598c3b31931e493d325205951eca",
+      "registered_at": "2026-09-29T16:40:09+00:00",
+      "replaced_src": null,
+      "src": "workspace/sar_adc_12b/candidate_18/src/sar_adc_12b.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/sar_adc_12b/candidate_18/src/sar_adc_12b.v",
+      "src_sha256": "4a464edd38436db4feb34486a535ee75c8717bed080948dd6fc670fe8be0751b",
+      "status": "VERIFIED",
+      "tb": "workspace/sar_adc_12b/candidate_18/tb/sar_adc_12b_tb.v",
+      "yosys_summary": "Cells: 44, DFF cells: 8"
+    },
+    {
+      "candidate_id": 1,
+      "design_type": "sar_adc_controller",
+      "module": "sar_adc_12b_v2",
+      "prompt_sha256": "ab27d49dff0b2e62a591862e363f2510504832cc9fa119d3ea3a92c6c2b38b1f",
+      "registered_at": "2026-09-29T18:21:56+00:00",
+      "replaced_src": null,
+      "src": "workspace/sar_adc_12b_v2/candidate_1/src/sar_adc_12b_v2.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/sar_adc_12b_v2/candidate_1/src/sar_adc_12b_v2.v",
+      "src_sha256": "30eaea7bef5a0f4b2b9e600a6072f1aefc307e394caab9b8f1f68302d87fbdc7",
+      "status": "VERIFIED",
+      "tb": "workspace/sar_adc_12b_v2/candidate_1/tb/sar_adc_12b_v2_tb.v",
+      "verification_contract": {
+        "comparator": {
+          "logical_output_polarity": {
+            "active_level": 1,
+            "active_level_meaning": "trial_bit_should_be_kept",
+            "logic_0_means": "trial_bit_should_be_cleared",
+            "logic_1_means": "trial_bit_should_be_kept"
+          },
+          "physical_behavior": "unspecified analog transfer relation",
+          "sar_decision": {
+            "comparator_value_to_clear_trial": 0,
+            "comparator_value_to_keep_trial": 1,
+            "on_logic_0": "clear_trial_bit",
+            "on_logic_1": "keep_trial_bit"
+          }
+        },
+        "comparator_high_keeps_bit": true,
+        "comparator_sample_event": "posedge clk",
+        "contract_hash": "d7af02003bf7d54aedb13c674860e0c1262076be9138e5ecc815328fbae7567f",
+        "kind": "sar_adc_controller",
+        "parameters": {
+          "comparator_high_keeps_bit": true,
+          "resolution": 12,
+          "settle_cycles": 2
+        },
+        "provenance": {
+          "comparator.physical_relation": {
+            "raw_value": null,
+            "status": "unresolved"
+          },
+          "comparator_high_keeps_bit": {
+            "raw_value": null,
+            "status": "explicit_user"
+          },
+          "comparator_sample_event": {
+            "raw_value": null,
+            "status": "defaulted"
+          },
+          "resolution": {
+            "raw_value": 12,
+            "status": "explicit_user"
+          },
+          "settle_cycles": {
+            "raw_value": 2,
+            "status": "explicit_user"
+          }
+        },
+        "resolution": 12,
+        "settle_cycles": 2,
+        "timing": {
+          "dac_trial_update": "posedge clk in S_SET_TRIAL; dac_code changes to trial_code | selected_bit",
+          "sample_event": "posedge clk",
+          "sample_offset": "posedge clk at trial_update_cycle + 3 clock periods",
+          "settling_interval": "2 complete clk periods after the DAC update edge"
+        },
+        "transaction": {
+          "adc_out_commit": "adc_out receives the final decided code on the LSB sampling edge",
+          "bit_order": "MSB to LSB, exactly once each",
+          "busy": "busy rises on start acceptance and falls on the same edge done rises",
+          "decision": "sampled comparator applies to the currently selected trial bit",
+          "done": "done rises on the next rising edge after the final comparator sample and stays high for one clk period",
+          "first_trial": "MSB trial is registered at the second rising edge after start acceptance",
+          "reset": "asynchronous active-low reset clears all controller outputs and state",
+          "start_acceptance": "start is sampled high in S_IDLE at a rising clk edge; busy rises on that edge",
+          "start_while_busy": "ignored; conversion does not restart"
+        },
+        "unresolved_fields": [
+          "comparator.physical_relation"
+        ],
+        "version": "sar-controller-contract-v2"
+      },
+      "yosys_summary": "Cells: 49, DFF cells: 8"
+    }
+  ],
+  "modules": {
+    "async_fifo_test": {
+      "candidate_id": 1,
+      "design_type": "async_fifo",
+      "module": "async_fifo_test",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-26T07:41:25+00:00",
+      "src": "workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/async_fifo_test/candidate_1/src/async_fifo_test.v",
+      "src_sha256": "1fc1e1bf28a50fea33bd3a83f80ab465e5fc9217973a563f209ba1a19eb47012",
+      "status": "VERIFIED",
+      "tb": "workspace/async_fifo_test/candidate_1/tb/async_fifo_test_tb.v",
+      "yosys_summary": null
+    },
+    "clock_divider": {
+      "candidate_id": 4,
+      "design_type": "generic",
+      "module": "clock_divider",
+      "prompt_sha256": "78565b58b7c5c34365162dca76ddd9b34dc12ece07748a321de72ad19900adee",
+      "registered_at": "2026-05-26T04:50:42+00:00",
+      "src": "workspace/clock_divider/candidate_4/src/clock_divider.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/clock_divider/candidate_4/src/clock_divider.v",
+      "src_sha256": "1894a346e74939329f3e352ef45f199c20a7a7828bb7a6990c89efcac58a2676",
+      "status": "VERIFIED",
+      "tb": "workspace/clock_divider/candidate_4/tb/clock_divider_tb.v",
+      "yosys_summary": "Cells: 8, DFF cells: 2"
+    },
+    "data_memory": {
+      "candidate_id": 1,
+      "design_type": "sram_byte_en",
+      "module": "data_memory",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/data_memory/candidate_1/src/data_memory.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/data_memory/candidate_1/src/data_memory.v",
+      "src_sha256": "f286ac8bbfc479a28499d46e4d8689043b1a68f226f26f84ade52de39d72bd2e",
+      "status": "VERIFIED",
+      "tb": "workspace/data_memory/candidate_1/tb/data_memory_tb.v",
+      "yosys_summary": "Cells: 54, DFF cells: 13, Notes: memory cells: 1"
+    },
+    "rv32i_alu": {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_alu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_alu/candidate_1/src/rv32i_alu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_alu/candidate_1/src/rv32i_alu.v",
+      "src_sha256": "9892b5888bddd6d10d911e5570a2678f7ea5ce799b4b2085e8167abc24747d55",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_alu/candidate_1/tb/rv32i_alu_tb.v",
+      "yosys_summary": "Cells: 33, DFF cells: 0"
+    },
+    "rv32i_bcu": {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_bcu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_bcu/candidate_1/src/rv32i_bcu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_bcu/candidate_1/src/rv32i_bcu.v",
+      "src_sha256": "4f10eafe35ac7fefbb5721539e9c9f376e37e59d9626c2f0db3ddf9ccb73db4d",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_bcu/candidate_1/tb/rv32i_bcu_tb.v",
+      "yosys_summary": "Cells: 18, DFF cells: 0"
+    },
+    "rv32i_core": {
+      "candidate_id": 2,
+      "design_type": "hierarchical_top",
+      "module": "rv32i_core",
+      "prompt_sha256": "bc6294f7bab1d2b7e5126ad2b36b1d357834f601ab0fdc26329bda18b930bc60",
+      "registered_at": "2026-05-17T18:19:49+00:00",
+      "src": "workspace/rv32i_core/candidate_2/src/rv32i_core.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/rv32i_core/candidate_2/src/rv32i_core.v",
+      "src_sha256": "36314a756cbfb65557a70a8549e5510b3542a841810e59bddc92b8c80ed6d831",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_core/candidate_2/tb/rv32i_core_tb.v",
+      "yosys_summary": "Cells: 325, DFF cells: 32, Notes: memory array mapped to registers, Linked verified deps: rv32i_alu, rv32i_bcu, rv32i_decoder, rv32i_lsu, rv32i_pc, rv32i_regfile"
+    },
+    "rv32i_decoder": {
+      "candidate_id": 2,
+      "design_type": "rv32i_decoder",
+      "module": "rv32i_decoder",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_decoder/candidate_2/src/rv32i_decoder.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_decoder/candidate_2/src/rv32i_decoder.v",
+      "src_sha256": "9ed46f7831a37ba22443ccf597347f55203b766123c0f0f35dcd0b6da3da6d1e",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_decoder/candidate_2/tb/rv32i_decoder_tb.v",
+      "yosys_summary": "Cells: 18, DFF cells: 0"
+    },
+    "rv32i_lsu": {
+      "candidate_id": 1,
+      "design_type": "generic",
+      "module": "rv32i_lsu",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_lsu/candidate_1/src/rv32i_lsu.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_lsu/candidate_1/src/rv32i_lsu.v",
+      "src_sha256": "58048fb99e63fcbb53f85ab05c48a63e870faa8d2c3911dcb3711ce70cba51d8",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_lsu/candidate_1/tb/rv32i_lsu_tb.v",
+      "yosys_summary": "Cells: 29, DFF cells: 0"
+    },
+    "rv32i_pc": {
+      "candidate_id": 1,
+      "design_type": "counter",
+      "module": "rv32i_pc",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_pc/candidate_1/src/rv32i_pc.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_pc/candidate_1/src/rv32i_pc.v",
+      "src_sha256": "70deeda07824c1443f2c5214f07b4ed718bf1805354933615ec217dea33de22c",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_pc/candidate_1/tb/rv32i_pc_tb.v",
+      "yosys_summary": "Cells: 4, DFF cells: 1"
+    },
+    "rv32i_regfile": {
+      "candidate_id": 1,
+      "design_type": "rv32i_regfile",
+      "module": "rv32i_regfile",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/rv32i_regfile/candidate_1/src/rv32i_regfile.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/rv32i_regfile/candidate_1/src/rv32i_regfile.v",
+      "src_sha256": "e8478de5d2cbaff7a048190cfb0fe817fece7aee472b6fcae9ac2f35b98b36fa",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_regfile/candidate_1/tb/rv32i_regfile_tb.v",
+      "yosys_summary": "Cells: 194, DFFs: 42"
+    },
+    "rv32i_soc": {
+      "candidate_id": 1,
+      "design_type": "hierarchical_top",
+      "module": "rv32i_soc",
+      "prompt_sha256": "e120e9efbbf153f08c4bb63ccf7685dc488b229038ffd1a93c24236d9565e6b6",
+      "registered_at": "2026-05-22T02:45:55+00:00",
+      "src": "workspace/rv32i_soc/candidate_1/src/rv32i_soc.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/rv32i_soc/candidate_1/src/rv32i_soc.v",
+      "src_sha256": "08a927b884fc29374c35344b4ffc045673bc1913491af9a69861e0ba1974369c",
+      "status": "VERIFIED",
+      "tb": "workspace/rv32i_soc/candidate_1/tb/rv32i_soc_tb.v",
+      "yosys_summary": "Cells: 434, DFF cells: 58, Notes: memory array mapped to registers; memory cells: 3; linked memory deps, Linked verified deps: data_memory, rv32i_alu, rv32i_bcu, rv32i_decoder, rv32i_lsu, rv32i_pc, rv32i_regfile, rv32i_core"
+    },
+    "sar_adc_12b": {
+      "candidate_id": 18,
+      "design_type": "sar_adc_controller",
+      "module": "sar_adc_12b",
+      "prompt_sha256": "7bbc0a27210aba025955024c23eb0cad85ad598c3b31931e493d325205951eca",
+      "registered_at": "2026-09-29T16:40:09+00:00",
+      "src": "workspace/sar_adc_12b/candidate_18/src/sar_adc_12b.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/sar_adc_12b/candidate_18/src/sar_adc_12b.v",
+      "src_sha256": "4a464edd38436db4feb34486a535ee75c8717bed080948dd6fc670fe8be0751b",
+      "status": "VERIFIED",
+      "tb": "workspace/sar_adc_12b/candidate_18/tb/sar_adc_12b_tb.v",
+      "yosys_summary": "Cells: 44, DFF cells: 8"
+    },
+    "sar_adc_12b_v2": {
+      "candidate_id": 1,
+      "design_type": "sar_adc_controller",
+      "module": "sar_adc_12b_v2",
+      "prompt_sha256": "ab27d49dff0b2e62a591862e363f2510504832cc9fa119d3ea3a92c6c2b38b1f",
+      "registered_at": "2026-09-29T18:21:56+00:00",
+      "src": "workspace/sar_adc_12b_v2/candidate_1/src/sar_adc_12b_v2.v",
+      "src_abs": "/mnt/d/Verylith/chipgpt/workspace/sar_adc_12b_v2/candidate_1/src/sar_adc_12b_v2.v",
+      "src_sha256": "30eaea7bef5a0f4b2b9e600a6072f1aefc307e394caab9b8f1f68302d87fbdc7",
+      "status": "VERIFIED",
+      "tb": "workspace/sar_adc_12b_v2/candidate_1/tb/sar_adc_12b_v2_tb.v",
+      "verification_contract": {
+        "comparator": {
+          "logical_output_polarity": {
+            "active_level": 1,
+            "active_level_meaning": "trial_bit_should_be_kept",
+            "logic_0_means": "trial_bit_should_be_cleared",
+            "logic_1_means": "trial_bit_should_be_kept"
+          },
+          "physical_behavior": "unspecified analog transfer relation",
+          "sar_decision": {
+            "comparator_value_to_clear_trial": 0,
+            "comparator_value_to_keep_trial": 1,
+            "on_logic_0": "clear_trial_bit",
+            "on_logic_1": "keep_trial_bit"
+          }
+        },
+        "comparator_high_keeps_bit": true,
+        "comparator_sample_event": "posedge clk",
+        "contract_hash": "d7af02003bf7d54aedb13c674860e0c1262076be9138e5ecc815328fbae7567f",
+        "kind": "sar_adc_controller",
+        "parameters": {
+          "comparator_high_keeps_bit": true,
+          "resolution": 12,
+          "settle_cycles": 2
+        },
+        "provenance": {
+          "comparator.physical_relation": {
+            "raw_value": null,
+            "status": "unresolved"
+          },
+          "comparator_high_keeps_bit": {
+            "raw_value": null,
+            "status": "explicit_user"
+          },
+          "comparator_sample_event": {
+            "raw_value": null,
+            "status": "defaulted"
+          },
+          "resolution": {
+            "raw_value": 12,
+            "status": "explicit_user"
+          },
+          "settle_cycles": {
+            "raw_value": 2,
+            "status": "explicit_user"
+          }
+        },
+        "resolution": 12,
+        "settle_cycles": 2,
+        "timing": {
+          "dac_trial_update": "posedge clk in S_SET_TRIAL; dac_code changes to trial_code | selected_bit",
+          "sample_event": "posedge clk",
+          "sample_offset": "posedge clk at trial_update_cycle + 3 clock periods",
+          "settling_interval": "2 complete clk periods after the DAC update edge"
+        },
+        "transaction": {
+          "adc_out_commit": "adc_out receives the final decided code on the LSB sampling edge",
+          "bit_order": "MSB to LSB, exactly once each",
+          "busy": "busy rises on start acceptance and falls on the same edge done rises",
+          "decision": "sampled comparator applies to the currently selected trial bit",
+          "done": "done rises on the next rising edge after the final comparator sample and stays high for one clk period",
+          "first_trial": "MSB trial is registered at the second rising edge after start acceptance",
+          "reset": "asynchronous active-low reset clears all controller outputs and state",
+          "start_acceptance": "start is sampled high in S_IDLE at a rising clk edge; busy rises on that edge",
+          "start_while_busy": "ignored; conversion does not restart"
+        },
+        "unresolved_fields": [
+          "comparator.physical_relation"
+        ],
+        "version": "sar-controller-contract-v2"
+      },
+      "yosys_summary": "Cells: 49, DFF cells: 8"
+    },
+    "uart_tx_axi": {
+      "candidate_id": 6,
+      "design_type": "axi_stream_uart_tx",
+      "module": "uart_tx_axi",
+      "prompt_sha256": null,
+      "registered_at": "2026-05-17T17:24:10+00:00",
+      "src": "workspace/uart_tx_axi/candidate_6/src/uart_tx_axi.v",
+      "src_abs": "D:/Verylith/chipgpt/workspace/uart_tx_axi/candidate_6/src/uart_tx_axi.v",
+      "src_sha256": "b78b2f451994e399811b6372a03a415b498dc63ed5aceb2fbaf66c7edd206508",
+      "status": "VERIFIED",
+      "tb": "workspace/uart_tx_axi/candidate_6/tb/uart_tx_axi_tb.v",
+      "yosys_summary": "Cells: 38, DFFs: 10"
+    }
+  },
+  "updated_at": "2026-09-29T18:21:56+00:00",
+  "version": 1
+}
