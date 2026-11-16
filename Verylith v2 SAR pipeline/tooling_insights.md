@@ -1,0 +1,3 @@
+For [async_fifo]: To prevent MEMORY_NOT_INFERRED in Yosys, the dual-port RAM read MUST be strictly synchronous. Use an `always @(posedge rd_clk)` block to assign `rd_data <= mem[rd_ptr_bin];`. NEVER use a combinational `assign` for memory reads.For generic: Ensure that output signals are driven directly from registers instead of combinational logic to avoid unintended logic mismatches.
+For sar_adc_controller: Ensure that state encoding uses a sufficient number of bits to represent all states to avoid logic mismatches.
+For sar_adc_controller: Use combinational logic to resolve DAC code updates based on comparator results instead of relying solely on sequential logic.
